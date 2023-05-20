@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kedawan!</title>
+
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe" crossorigin="anonymous"></script>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js" integrity="sha256-2Pmvv0kuTBOenSvLm6bvfBSSHrUJ+3A7x6P5Ebd07/g=" crossorigin="anonymous"></script>
+
+    <!-- Typeit -->
+    <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js"></script>
+</head>
+<body>
+    <header class="text-light bg-black mb-3">
+        <div id="intro" class="text-center">
+            <div class="container">
+                <div class="row">
+                    <div class="col mt-5 mb-3">
+                        <h1 id="introText"></h1>
+                        <br>
+                        <!-- <p class="lead">URL Shortener sederhana</p> -->
+
+                        <script>
+                        new TypeIt("#introText", {
+                            loop: true
+                        })
+                        .type("Kedawan!", { delay: 2500 })
+                        .delete(null, { delay: 500 })
+                        .type("ꦏꦼꦣꦮꦤ꧀!", { delay: 2500 })
+                        .delete(null, { delay: 500 })
+                        .go();
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="fastFormBlock">
+            <div class="container">
+                <div class="row">
+                    <div class="col mb-5">
+                        <form id="fastForm" method="post" action="{{ url_for('fastadd_api.fastaddapi') }}">
+                            <div class="mb-3">
+                                <input type="url" name="fastFormURL" class="form-control" id="fastFormURL" placeholder="Masukkan URL..." required>
+                            </div>
+
+                            <div class="mb-3">
+                                <div class="form-check">
+                                    <input type="checkbox" name="fastFormIsCustomSlug" class="form-check-input" value="" id="fastFormIsCustomSlug">
+                                    <label class="form-check-label" for="fastFormIsCustomSlug">
+                                        Gunakan <i>slug</i> custom
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div id="fastFormCustomSlugBox" class="input-group mb-3" style="display: none;">
+                                <span class="input-group-text" id="fastFormCustomSlugPrefix">{{ APP_URL }}/</span>
+                                <input type="text" name="fastFormCustomSlug" class="form-control" placeholder="slug-custom" aria-label="Slug" aria-describedby="fastFormCustomSlugPrefix" value="">
+                            </div>
+
+                            <button type="submit" id="fastFormSubmit" class="btn btn-light">
+                                <div id="fastFormSubmitLoading" style="display: none;">
+                                    <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                                </div>
+
+                                Pendekkan!
+                            </button>
+
+                            <div id="fastFormResultAlert" class="alert alert-light mt-3" role="alert" style="display: none;">
+                                Link: <b><div id="fastFormShortenLink"></div></b>
+                            </div>
+
+                            <script>
+                                var fastFormIsCustomSlug = $("#fastFormIsCustomSlug")
+                                var fastFormCustomSlugBox = $("#fastFormCustomSlugBox")
+
+                                fastFormIsCustomSlug.change(function() {
+                                    if($(this).is(":checked")) {
+                                        fastFormCustomSlugBox.show()
+                                    } else {
+                                        fastFormCustomSlugBox.hide()
+                                    }
+                                })
+                            </script>
+
+                            <script>
+                                // UNUSED!
+                                // function genSlug(length) {
+                                //     let result = '';
+                                //     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+                                //     const charactersLength = characters.length;
+                                //     let counter = 0;
+                                //     while (counter < length) {
+                                //       result += characters.charAt(Math.floor(Math.random() * charactersLength));
+                                //       counter += 1;
+                                //     }
+                                //     return result;
+                                // }
+
+                                var fastForm = $("#fastForm")
+                                var fastFormActionURL = fastForm.prop("action")
+
+                                var fastFormSubmit = $("#fastFormSubmit")
+                                var fastFormSubmitLoading = fastFormSubmit.find("#fastFormSubmitLoading")
+
+                                // Set button to loading state
+                                function disableSubmitBtn() {
+                                    fastFormSubmit.prop("disabled", true)
+                                    fastFormSubmitLoading.show()
+                                }
+
+                                // Set button to active state
+                                function enableSubmitBtn() {
+                                    fastFormSubmit.prop("disabled", false)
+                                    fastFormSubmitLoading.hide()
+                                }
+
+                                fastForm.submit(function(e) {
+                                    // Don't submit the form
+                                    e.preventDefault()
+
+                                    disableSubmitBtn()
+
+                                    let fastFormData = fastForm.serializeArray()
+                                    console.log(fastFormData)
+                                    let fastFormURL = fastFormData.find(obj => {return obj.name == "fastFormURL"})["value"]
+                                    let fastFormSlug = fastFormData.find(obj => {return obj.name == "fastFormCustomSlug"})["value"]
+
+                                    let data = {}
+                                    data.url = fastFormURL
+                                    if(fastFormSlug) {
+                                        data.slug = fastFormSlug
+                                    }
+
+                                    console.log(JSON.stringify({
+                                            slug: fastFormSlug,
+                                            url: fastFormURL
+                                        }))
+                                    $.ajax({
+                                        type: "POST",
+                                        url: fastFormActionURL,
+                                        data: JSON.stringify(data),
+                                        contentType: "application/json; charset=utf-8",
+                                        dataType: "json",
+                                        success: function(data){
+                                            console.log(data)
+                                            $("#fastFormShortenLink").html(
+                                                `<a href='{{ APP_URL }}/${data['slug']}'>{{ APP_URL }}/${data['slug']}</a>`
+                                            )
+                                            $("#fastFormResultAlert").show()
+                                            fastFormSubmitLoading.hide()
+                                        },
+                                        error: function(err){
+                                            console.log(err)
+                                            enableSubmitBtn()
+                                        }
+                                    })
+
+
+                                })
+                            </script>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wave -->
+        <!-- <svg width="100%" height="100%" id="svg" viewBox="0 0 1440 390" xmlns="http://www.w3.org/2000/svg" class="transition duration-300 ease-in-out delay-150"><path d="M 0,400 C 0,400 0,200 0,200 C 89.5,204.60714285714286 179,209.21428571428572 320,203 C 461,196.78571428571428 653.5,179.75000000000003 774,169 C 894.5,158.24999999999997 943,153.78571428571428 1042,160 C 1141,166.21428571428572 1290.5,183.10714285714286 1440,200 C 1440,200 1440,400 1440,400 Z" stroke="none" stroke-width="0" fill="#ffffff" fill-opacity="1" class="transition-all duration-300 ease-in-out delay-150 path-0"></path></svg> -->
+        <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#fff" fill-opacity="1" d="M0,288L48,272C96,256,192,224,288,197.3C384,171,480,149,576,165.3C672,181,768,235,864,250.7C960,267,1056,245,1152,250.7C1248,256,1344,288,1392,304L1440,320L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg> -->
+    </header>
+
+    <main>
+        {% block content %}
+            
+        {% endblock %}
+    </main>
+</body>
+</html>
