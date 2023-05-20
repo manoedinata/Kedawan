@@ -7,3 +7,4 @@ python-dotenv==1.0.0
 pytz==2023.3
 Requests==2.30.0
 SQLAlchemy==2.0.9
+mysqlclient==2.1.1
