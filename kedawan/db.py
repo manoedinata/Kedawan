@@ -1,17 +1,3 @@
-# from pymongo import MongoClient
-
-# from bson import json_util
-
-# def dump_bson(data):
-#     return json_util.dumps(data)
-
-# # MongoDB
-# mongo = MongoClient("mongodb+srv://manoedinata:0xbnqL9dbA9Emlih@cluster0.bozu48b.mongodb.net/?retryWrites=true&w=majority")
-
-# # DB
-# db = mongo.kedawan
-# kedawanLinks = db.links
-
 from flask_sqlalchemy import SQLAlchemy
 
 from sqlalchemy.dialects.mysql import INTEGER
