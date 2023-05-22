@@ -34,7 +34,7 @@ class Visitor(db.Model):
     country_code = db.Column(db.String(2), nullable=False)
     visit_date = db.Column(db.DateTime, nullable=False)
 
-    fast_links = db.relationship('FastLinks', backref=db.backref('visitors', cascade='all'))
+    fast_links = db.relationship('FastLinks', backref=db.backref('visitors', cascade='all, delete-orphan'))
 
     @property
     def serialize(self):
