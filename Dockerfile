@@ -1,18 +1,10 @@
-# Use a lightweight base image
-FROM python:3.9-alpine
+# Dockerfile to run Kedawan on Docker container
+# With: https://hub.docker.com/r/tiangolo/uwsgi-nginx-flask/
 
-# Set the working directory inside the container
-WORKDIR /app
+FROM tiangolo/uwsgi-nginx-flask:python3.11
+
+COPY ./requirements.txt /app/requirements.txt
+
+RUN pip install --no-cache-dir --upgrade -r /app/requirements.txt
+
 COPY . /app
-
-# Install dependencies
-RUN apk update && \
-    apk add --virtual build-deps gcc musl-dev && \
-    apk add --no-cache mariadb-dev
-
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir gunicorn
-RUN apk del build-deps
-
-# Set the command to run the startup script
-CMD ["/app/startup.sh"]
