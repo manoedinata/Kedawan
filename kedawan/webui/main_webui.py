@@ -11,9 +11,12 @@ from dotenv import dotenv_values
 from datetime import datetime
 from pytz import timezone
 
+from sqlalchemy import func
 from kedawan.db import db
 from kedawan.db import FastLinks
 from kedawan.db import Visitor
+from kedawan.db import IPAddressLog
+from kedawan.webui.utils import setIPFromDB
 
 config = dotenv_values(".env") 
 
@@ -32,6 +35,8 @@ def linksredirect(slug):
         return "Not found!"
 
     # Increment visitor
+    # TODO: Check the total of specific column instead
+    # Length of column(fast_links_id=id)
     fastlinks.visitor += 1
     db.session.add(fastlinks)
 
@@ -46,18 +51,13 @@ def linksredirect(slug):
 
     print(ip)
 
-    try:
-        ipInfoReq = requests.get("https://ipinfo.io/" + ip, params={
-            "token": config["IPINFO_TOKEN"]
-        }).json()
-        country = ipInfoReq["country"]
-    except:
-        country = "00"
+    ip_db = setIPFromDB(ip)
+    # TODO: Check if ip_db succeed
 
     visitor = Visitor(
         fast_links_id=fastlinks.id,
-        country_code=country,
-        visit_date=currentDate
+        visit_date=currentDate,
+        ip_address_id=ip_db["id"]
     )
     db.session.add(visitor)
 

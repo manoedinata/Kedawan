@@ -1,6 +1,7 @@
 from flask_sqlalchemy import SQLAlchemy
 
-from sqlalchemy.dialects.mysql import INTEGER
+from sqlalchemy import func
+from sqlalchemy.dialects.mysql import VARBINARY
 
 db = SQLAlchemy()
 
@@ -31,10 +32,11 @@ class FastLinks(db.Model):
 class Visitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fast_links_id = db.Column(db.Integer, db.ForeignKey('fast_links.id'), nullable=False)
-    country_code = db.Column(db.String(2), nullable=False)
+    ip_address_id = db.Column(db.Integer, db.ForeignKey('ip_address_log.id'), nullable=False)
     visit_date = db.Column(db.DateTime, nullable=False)
 
     fast_links = db.relationship('FastLinks', backref=db.backref('visitors', cascade='all, delete-orphan'))
+    ip_address = db.relationship('IPAddressLog', backref=db.backref('visitors', cascade='all, delete-orphan'))
 
     @property
     def serialize(self):
@@ -43,8 +45,26 @@ class Visitor(db.Model):
         return {
             "id": self.id,
             "fast_links_id": self.fast_links_id,
-            "country_code": self.country_code,
+            "ip_address_id": self.ip_address_id,
         }
 
     def __repr__(self):
         return f'<Visitor {self.fast_links_id}>'
+
+class IPAddressLog(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(VARBINARY(16), nullable=False, unique=True)
+    country_code = db.Column(db.String(2), nullable=False)
+
+    @property
+    def serialize(self):
+        """Return object data in easily serializable format"""
+        """https://stackoverflow.com/a/7103486"""
+        return {
+            "id": self.id,
+            "ip_address": str(func.inet6_ntoa(self.ip_address)),
+            "country_code": self.country_code,
+        }
+
+    def __repr__(self):
+        return f'<IPAddressLog {str(func.inet6_ntoa(self.ip_address))}>'
