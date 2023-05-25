@@ -6,3 +6,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - 30026:80
+  db:
+    image: mysql:latest
+    environment:
+      MYSQL_DATABASE: kedawan
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: mypassword
+      MYSQL_ROOT_PASSWORD: myrootpassword
