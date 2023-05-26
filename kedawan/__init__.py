@@ -21,7 +21,7 @@ def create_app() -> Flask:
 
     # DB
     app.config["SQLALCHEMY_DATABASE_URI"] = \
-        f"mariadb://{config['DB_USER']}:{config['DB_PASS']}@{config['DB_HOST']}:{config.get('DB_PORT', 3306)}/{config['DB_NAME']}"
+        f"mariadb://{config['MYSQL_USER']}:{config['MYSQL_PASSWORD']}@{config['MYSQL_HOST']}:{config.get('MYSQL_PORT', 3306)}/{config['MYSQL_DATABASE']}"
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
 
