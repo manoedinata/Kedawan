@@ -6,10 +6,10 @@ from flask import request
 
 import requests
 
-from dotenv import dotenv_values
-
 from datetime import datetime
 from pytz import timezone
+
+from kedawan.config import config
 
 from sqlalchemy import func
 from kedawan.db import db
@@ -17,8 +17,6 @@ from kedawan.db import FastLinks
 from kedawan.db import Visitor
 from kedawan.db import IPAddressLog
 from kedawan.webui.utils import setIPFromDB
-
-config = dotenv_values(".env") 
 
 jakartaTz = timezone("Asia/Jakarta")
 

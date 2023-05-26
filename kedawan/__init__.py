@@ -2,7 +2,7 @@ from flask import Flask
 
 from flask_migrate import Migrate
 
-from dotenv import dotenv_values
+from kedawan.config import config
 
 from kedawan.db import db
 
@@ -11,7 +11,6 @@ from kedawan.api.fastadd_api import fastadd_api_bp as fastadd_api
 
 from kedawan.webui.main_webui import main_webui
 
-config = dotenv_values(".env") 
 
 migrate = Migrate()
 

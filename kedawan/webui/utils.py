@@ -1,12 +1,10 @@
 import requests
 
-from dotenv import dotenv_values
+from kedawan.config import config
 
 from sqlalchemy import func
 from kedawan.db import db
 from kedawan.db import IPAddressLog
-
-config = dotenv_values(".env") 
 
 def reqIPInfoAPI(ipAddress: str) -> dict:
     ipInfoReq = requests.get("https://ipinfo.io/" + ipAddress, params={
