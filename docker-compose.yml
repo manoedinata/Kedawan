@@ -7,6 +7,6 @@ services:
     ports:
       - 30026:80
   db:
-    image: mysql:latest
+    image: mariadb:latest
     env_file:
       - ".env"
