@@ -10,3 +10,8 @@ services:
     image: mariadb:latest
     env_file:
       - ".env"
+    volumes:
+      - kedawan_db:/var/lib/mysql
+
+volumes:
+  kedawan_db:
