@@ -7,7 +7,7 @@ db = SQLAlchemy()
 
 class FastLinks(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    slug = db.Column(db.Text, nullable=False)
+    slug = db.Column(db.Text, nullable=False, unique=True)
     url = db.Column(db.Text, nullable=False)
     expire = db.Column(db.DateTime, nullable=False)
     visitor = db.Column(db.Integer, default=0, nullable=False)
