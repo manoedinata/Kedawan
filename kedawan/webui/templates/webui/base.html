@@ -82,8 +82,12 @@
                                 </p>
                             </div>
 
-                            <div id="fastFormResultAlert" class="alert alert-light mt-3" role="alert" style="display: none;">
+                            <div id="fastFormResultAlertSuccess" class="alert alert-light mt-3" role="alert" style="display: none;">
                                 <strong>Sukses!</strong> Link: <b><div id="fastFormShortenLink"></div></b>
+                            </div>
+
+                            <div id="fastFormResultAlertFail" class="alert alert-danger mt-3" role="alert" style="display: none;">
+                                <strong>Error:</strong> <b><div id="fastFormFailMessage"></div></b>
                             </div>
 
                             <script>
@@ -135,6 +139,8 @@
                                     // Don't submit the form
                                     e.preventDefault()
 
+                                    $("#fastFormResultAlertSuccess").hide()
+                                    $("#fastFormResultAlertFail").hide()
                                     disableSubmitBtn()
 
                                     let fastFormData = fastForm.serializeArray()
@@ -163,11 +169,15 @@
                                             $("#fastFormShortenLink").html(
                                                 `<a href='{{ APP_URL }}/${data['slug']}'>{{ APP_URL }}/${data['slug']}</a>`
                                             )
-                                            $("#fastFormResultAlert").show()
+                                            $("#fastFormResultAlertSuccess").show()
                                             fastFormSubmitLoading.hide()
                                         },
                                         error: function(err){
-                                            console.log(err)
+                                            console.log(err.responseJSON)
+                                            $("#fastFormFailMessage").html(
+                                                err.responseJSON["error"]
+                                            )
+                                            $("#fastFormResultAlertFail").show()
                                             enableSubmitBtn()
                                         }
                                     })

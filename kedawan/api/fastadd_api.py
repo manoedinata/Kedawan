@@ -8,6 +8,7 @@ from datetime import datetime
 from datetime import timedelta
 from pytz import timezone
 
+from sqlalchemy.exc import IntegrityError
 from kedawan.db import db
 from kedawan.db import FastLinks
 from kedawan.api.utils import generateSlug
@@ -48,6 +49,10 @@ class FastAddAPI(Resource):
             db.session.commit()
 
             return fastlinks.serialize
+
+        except IntegrityError:
+            db.session.rollback()
+            return {"error": "Slug sudah digunakan"}, 400
 
         except Exception as e:
             db.session.rollback()
