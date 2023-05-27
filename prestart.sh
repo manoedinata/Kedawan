@@ -5,3 +5,6 @@ sleep 25;
 
 # Run migrations
 FLASK_APP="main:app" flask db upgrade
+
+# Activate cron
+cron
